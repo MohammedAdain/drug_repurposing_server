@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affinity Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .result {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Drug Affinity Result</h2>
+    <div class="result">
+        <p><strong>Drug Name:</strong> {{ drug_name }}</p>
+        <p><strong>Affinity Score:</strong> {{ affinity }}</p>
+    </div>
+
+    <br>
+    <a href="/">Check another drug</a>
+
+</body>
+</html>
