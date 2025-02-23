@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 import pandas as pd
+import numpy as np
 from pydantic import BaseModel
 import random
 from starlette.responses import HTMLResponse
@@ -26,6 +27,8 @@ drug_data_smiles_drug_name = {}
 @app.on_event("startup")
 def load_csv():
     global drug_data
+    global w2v_model
+    global loaded_model
     try:
         df = pd.read_csv("drugs.csv")  # Replace with your actual file path
         drug_data = dict(zip(df["Unnamed: 3"].astype(str), df["smiles"].astype(str)))
@@ -50,6 +53,25 @@ def load_csv():
         print(f"Error loading pickel models: {e}")
 
 
+# Function to convert a single SMILES string to mol2vec embedding
+def smiles_to_mol2vec(smiles, model, unseen="UNK"):
+    """ Converts a SMILES string to a Mol2Vec vector using Gensim 4.0+ API """
+    mol = Chem.MolFromSmiles(smiles)  # Convert to RDKit Mol object
+    if mol is None:
+        raise ValueError("Invalid SMILES string provided.")
+
+    sentence = MolSentence(mol2alt_sentence(mol, 1))  # Generate sentence
+    vector = []
+
+    for word in sentence:
+        if word in model.wv.key_to_index:
+            vector.append(model.wv[word])
+        elif unseen is not None:
+            vector.append(model.wv[unseen] if unseen in model.wv.key_to_index else np.zeros(model.vector_size))
+
+    return np.mean(vector, axis=0) if vector else np.zeros(model.vector_size)
+
+
 # Serve the HTML form
 @app.get("/", response_class=HTMLResponse)
 async def form_page(request: Request):
@@ -72,7 +94,13 @@ async def submit_form(
         print("Invalid molecular_formula")
     
     # Generate a random affinity number
-    affinity = round(random.uniform(0.1, 10.0), 2)
+    # affinity = round(random.uniform(0.1, 10.0), 2)
+    # Convert the SMILES input to a vector
+    X_input = np.array([smiles_to_mol2vec(smiles, w2v_model)])
+    print(f"Processed Input Shape: {X_input.shape}")  # Should match the shape of X during training
+    # Make prediction
+    y_pred = loaded_model.predict(X_input)
+    print(f"Predicted vina_score: {y_pred[0]}")
 
     return templates.TemplateResponse(
         "result.html",
@@ -81,7 +109,7 @@ async def submit_form(
             "input_type": "Drug Name" if drug_name else "Molecular Formula",
             "input_value": drug_name if drug_name else molecular_formula,
             "smiles": smiles,
-            "affinity": affinity
+            "affinity": y_pred[0]
         }
     )
 
