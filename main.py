@@ -25,9 +25,6 @@ templates = Jinja2Templates(directory="templates")
 # Dictionary to store drug name → SMILES mapping
 drug_data = {}
 
-# Dictionary to store SMILES → drug name mapping
-drug_data_smiles_drug_name = {}
-
 # Load CSV file and populate dictionary at startup
 @app.on_event("startup")
 def load_csv():
@@ -37,7 +34,6 @@ def load_csv():
     try:
         df = pd.read_csv("drugs.csv")  # Replace with your actual file path
         drug_data = dict(zip(df["Unnamed: 3"].astype(str), df["smiles"].astype(str)))
-        drug_data_smiles_drug_name = dict(zip(df["smiles"].astype(str), df["Unnamed: 3"].astype(str)))
         print(f"Loaded {len(drug_data)} drugs from CSV.")
     except Exception as e:
         print(f"Error loading CSV: {e}")
@@ -89,11 +85,13 @@ async def submit_form(
     drug_name: str = Form(None),
     molecular_formula: str = Form(None)
 ):
-    # Check if drug name exists in the dictionary
-    smiles = drug_data.get(drug_name, "Unknown") if drug_name else "N/A"
+    if molecular_formula:
+        smiles = molecular_formula
+    else:
+        # Check if drug name exists in the dictionary
+        smiles = drug_data.get(drug_name, "Unknown") if drug_name else "N/A"
 
-    # if molecular_formula:
-        # drug_name = drug_data_smiles_drug_name.get(molecular_formula, "Unknown") if molecular_formula else "N/A"
+
     
     if not drug_name:
         print("Invalid molecular_formula")
