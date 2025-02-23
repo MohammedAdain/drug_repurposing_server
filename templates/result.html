@@ -9,9 +9,13 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 50px;
+            background-image: url('/static/hacklytics_dna_background.jpg');
+            background-size: cover;
+            color: white;
         }
         .result {
-            background: #f4f4f4;
+            /* background: #f4f4f4; */
+            background: rgba(0, 0, 0, 0.7); /* Transparent dark background */
             padding: 20px;
             border-radius: 5px;
             display: inline-block;
@@ -25,10 +29,11 @@
         <p><strong>{{ input_type }}:</strong> {{ input_value }}</p>
         <p><strong>Smiles:</strong> {{ smiles }}</p>
         <p><strong>Affinity Score:</strong> {{ affinity }}</p>
+        <br>
+    <a href="/" style="color: aqua;">Check another drug</a>
     </div>
 
-    <br>
-    <a href="/">Check another drug</a>
+    
 
 </body>
 </html>

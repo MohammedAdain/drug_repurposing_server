@@ -11,8 +11,13 @@ from gensim.models import word2vec
 from mol2vec.features import mol2alt_sentence, MolSentence, DfVec
 from sklearn.metrics import mean_absolute_error, mean_squared_error,r2_score
 
+from fastapi.staticfiles import StaticFiles
+
 
 app = FastAPI()
+
+# Serve static files (e.g., images, CSS)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Jinja2 for rendering HTML templates
 templates = Jinja2Templates(directory="templates")
