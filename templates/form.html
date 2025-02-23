@@ -15,11 +15,18 @@
             padding: 20px;
             border-radius: 5px;
             display: inline-block;
+            width: 50%;
+            max-width: 500px;
         }
         input, button {
-            padding: 10px;
-            margin: 10px;
+            padding: 12px;
+            margin: 10px 0;
             font-size: 16px;
+            width: 80%;
+            max-width: 400px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
         button {
             background: blue;
@@ -34,9 +41,12 @@
 </head>
 <body>
 
-    <h2>Enter a Drug Name</h2>
+    <h2>Enter Drug Name or Molecular Formula</h2>
     <form action="/submit/" method="post">
-        <input type="text" name="drug_name" placeholder="Enter drug name" required>
+        <input type="text" name="drug_name" placeholder="Enter Drug Name">
+        <br><strong>OR</strong><br>
+        <input type="text" name="molecular_formula" placeholder="Enter Molecular Formula">
+        <br>
         <button type="submit">Check Affinity</button>
     </form>
 
